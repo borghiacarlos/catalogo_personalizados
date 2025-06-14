@@ -1,0 +1,120 @@
+{% extends "core/base.html" %}
+
+{% block title %}
+Galeria de Designs - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-4">Nossos Designs</h1>
+            <p class="lead text-muted">Escolha um modelo e comece a personalizar seu material.</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- ===== SEÇÃO DE FILTROS ===== -->
+<div class="card card-body mb-5 shadow-sm">
+    <form method="GET" action="{% url 'designs:gallery' %}" class="row g-3 align-items-center">
+        
+        <!-- Filtro de Tipo de Produto (NOVO) -->
+        <div class="col-md-3">
+            <label for="product_type" class="form-label">Tipo de Impresso</label>
+            <select name="product_type" id="product_type" class="form-select">
+                <option value="">Todos os Tipos</option>
+                {% for p_type in all_product_types %}
+                    <option value="{{ p_type.id }}" {% if p_type.id == selected_product_type_id %}selected{% endif %}>
+                        {{ p_type.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Filtro de Categoria -->
+        <div class="col-md-3">
+            <label for="category" class="form-label">Categoria</label>
+            <select name="category" id="category" class="form-select">
+                <option value="">Todas as Categorias</option>
+                {% for category in all_categories %}
+                    <option value="{{ category.id }}" {% if category.id == selected_category_id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Filtro de Cor -->
+        <div class="col-md-3">
+            <label for="color" class="form-label">Cor</label>
+            <select name="color" id="color" class="form-select">
+                <option value="">Todas as Cores</option>
+                {% for color in all_colors %}
+                    <option value="{{ color.id }}" {% if color.id == selected_color_id %}selected{% endif %}>
+                        {{ color.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Botões -->
+        <div class="col-md-3 d-grid mt-auto">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="{% url 'designs:gallery' %}" class="btn btn-link btn-sm mt-1">Limpar Filtros</a>
+        </div>
+    </form>
+</div>
+    <!-- ===== FIM DA SEÇÃO DE FILTROS ===== -->
+
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for design in designs %}
+        <div class="col">
+            <div class="card h-100 card-product card-interactive">
+                {% if design.image %}
+                    <img src="{{ design.image.url }}" class="card-img-top" alt="{{ design.name }}">
+                {% else %}
+                    <img src="https://placehold.co/600x400/E9ECEF/495057?text=Sem+Imagem" class="card-img-top" alt="Imagem não disponível">
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ design.name }}</h5>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Categorias: 
+                            {% for category in design.categories.all %}
+                                {{ category.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                Nenhuma
+                            {% endfor %}
+                        </small>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <div class="btn-group">
+                            <a href="{% url 'designs:detail' design.id %}" class="btn btn-sm btn-outline-secondary">Ver Detalhes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">
+                Nenhum design encontrado para os filtros selecionados.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+    <!-- Banner CTA -->
+    <div class="p-5 mt-5 cta-banner text-center">
+        <h2 class="fw-bold">Não encontrou o que procurava?</h2>
+        <p class="lead">Nossa equipe de designers pode criar uma arte exclusiva para o seu negócio.</p>
+        <a href="{% url 'products:hire_design_gallery' %}" class="btn btn-lg btn-brand-primary mt-3">Saiba Mais</a>
+    </div>
+</div>
+
+{% endblock %}

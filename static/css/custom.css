@@ -1,0 +1,202 @@
+:root {
+    /* Definindo nossa paleta de cores como variáveis CSS */
+    --brand-primary: #282b57; /* Azul Marinho */
+    --brand-accent: #ceff00; /* Verde-Limão */
+    --brand-hard-gray: #222222; /* Cinza Escuro */
+    --brand-gray: #595959; /* Cinza */
+    --brand-light-gray: #f8f9fa;
+    --brand-white: #ffffff;
+    --brand-border-color: #e9ecef; /* Um cinza bem claro para bordas */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--brand-white);
+    color: var(--brand-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.main-content-section {
+    background-color: var(--brand-light-gray);
+}
+
+/* --- Estilos para os componentes --- */
+
+.navbar-custom {
+    border-bottom: 1px solid var(--brand-border-color);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.navbar-custom .nav-link {
+    color: var(--brand-gray);
+    font-weight: 500;
+    position: relative;
+    transition: color 0.2s ease-in-out;
+}
+
+.navbar-custom .nav-link:hover {
+    color: var(--brand-primary);
+}
+
+.footer-custom {
+    background-color: var(--brand-primary);
+    color: rgba(255, 255, 255, 0.7);
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.footer-custom a {
+    color: var(--brand-white);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.footer-custom a:hover {
+    color: var(--brand-accent);
+}
+
+/* --- Estilos para os Cards --- */
+
+.card-interactive {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-interactive:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.75rem 1.5rem rgba(40, 43, 87, 0.12) !important;
+}
+
+.card-product {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0.25rem 0.75rem rgba(40, 43, 87, 0.07);
+}
+
+a.card-product {
+    text-decoration: none;
+}
+
+.card-product .card-title {
+    font-weight: 600;
+    color: var(--brand-primary);
+}
+
+.card-product .card-text .text-muted {
+    font-size: 0.9rem;
+}
+
+.card-product-sm {
+    border: 1px solid var(--brand-border-color);
+    border-radius: 12px;
+}
+
+/* Estiliza os cabeçalhos principais das páginas */
+.page-header {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--brand-border-color);
+}
+
+.page-header h1 {
+    font-weight: 700;
+}
+
+/* Centraliza e limita a largura dos textos de apoio para melhor legibilidade */
+.page-header .lead {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Estilo para os botões principais de ação */
+.btn-brand-accent {
+    background-color: var(--brand-accent);
+    color: var(--brand-primary);
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.btn-brand-accent:hover {
+    background-color: var(--brand-accent);
+    color: var(--brand-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(40, 43, 87, 0.1);
+}
+
+/* Ajustes finos nos formulários */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 0.25rem rgba(206, 255, 0, 0.25);
+}
+
+/* ===== NOVOS ESTILOS PARA O BANNER CTA E BOTÕES ===== */
+
+/* Estilo para o banner "Call to Action" */
+.cta-banner {
+    background-color: var(--brand-white);
+    border: 2px solid var(--brand-primary);
+    border-radius: 16px;
+    box-shadow: 0 0.5rem 1.5rem rgba(40, 43, 87, 0.08);
+}
+
+/* Garante que o texto dentro do novo banner use a cor primária */
+.cta-banner h2 {
+    color: var(--brand-primary);
+}
+
+.cta-banner .lead {
+    color: rgba(40, 43, 87, 0.75); /* Um tom um pouco mais claro do azul para o subtítulo */
+}
+
+/* Novo estilo para o botão primário (azul) */
+.btn-brand-primary {
+    background-color: var(--brand-primary);
+    color: var(--brand-white);
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 2rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-brand-primary:hover {
+    background-color: var(--brand-primary);
+    color: var(--brand-white);
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(40, 43, 87, 0.2);
+}
+
+/* Estilo para os botões de ação com a cor de destaque (verde-limão) */
+.btn-brand-accent {
+    background-color: var(--brand-accent);
+    color: var(--brand-primary);
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.btn-brand-accent:hover {
+    background-color: var(--brand-accent);
+    color: var(--brand-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(40, 43, 87, 0.1);
+}
+
+/* Ajustes finos nos formulários */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 0.25rem rgba(206, 255, 0, 0.25);
+}

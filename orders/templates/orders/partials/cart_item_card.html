@@ -1,0 +1,35 @@
+{# Este é o nosso card de item reutilizável #}
+<div class="card mb-3 shadow-sm">
+    <div class="row g-0">
+        <div class="col-md-3">
+            {% if item.image_url %}
+            <img src="{{ item.image_url }}" class="img-fluid rounded-start" alt="{{ item.design_name }}" />
+            {% else %}
+            <img src="https://placehold.co/300x300/E9ECEF/495057?text=Produto" class="img-fluid rounded-start" alt="Produto sem imagem" />
+            {% endif %}
+        </div>
+        <div class="col-md-9">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">{% if item.design_id %} {{ item.design_name }} {% else %} {{ item.variation_name }} {% endif %}</h5>
+                        {% if item.design_id %}
+                        <p class="card-text mb-1"><small class="text-muted">{{ item.variation_name }}</small></p>
+                        {% endif %}
+                        <p class="card-text">Quantidade: {{ item.quantity }}</p>
+                        {% if item.design_fee %}
+                        <p class="card-text mb-1"><small class="text-success">+ Criação de Arte: R$ {{ item.design_fee|floatformat:2 }}</small></p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <form action="{% url 'orders:remove_from_cart' item.tier_id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">&times;</button>
+                        </form>
+                    </div>
+                </div>
+                <p class="card-text text-end fs-5"><strong>R$ {{ item.price|floatformat:2 }}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>

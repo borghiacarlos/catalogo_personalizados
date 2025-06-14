@@ -1,0 +1,134 @@
+{% extends "core/base.html" %} {% load video_filters %} {% block title %} {{ design.name }} - {{ block.super }} {% endblock %} {% block content %}
+<div class="container">
+    <!-- Seção do Design Principal -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <img src="{{ design.image.url }}" class="img-fluid rounded shadow" alt="{{ design.name }}" />
+        </div>
+        <div class="col-md-6">
+            <h1 class="display-5">{{ design.name }}</h1>
+            <p class="lead text-muted">Agora, escolha o tipo de material que você deseja para este design.</p>
+            <hr />
+            <p>
+                <strong>Categorias:</strong>
+                {% for category in design.categories.all %}
+                <span class="badge bg-secondary">{{ category.name }}</span>
+                {% endfor %}
+            </p>
+            <p>
+                <strong>Cores:</strong>
+                {% for color in design.colors.all %}
+                <span class="badge" style="background-color: {{ color.hex_code }}; color: #fff;">{{ color.name }}</span>
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Seção das Variações de Produto Disponíveis -->
+    <h2 class="mb-4">Escolha uma opção de produto:</h2>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for variation in design.available_variations.all %}
+        <div class="col">
+            <div class="card h-100 card-product">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="my-0 fw-normal">{{ variation.name }}</h5>
+                    <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#variationModal-{{ variation.id }}"><i class="bi bi-info-circle-fill me-1"></i> Saiba Mais</button>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mt-3 mb-4">
+                        {% for spec in variation.specifications.all %}
+                        <li>{% if spec.icon %}<i class="bi {{ spec.icon }} me-2 text-primary"></i>{% endif %} <strong>{{ spec.name }}:</strong> {{ spec.value }}</li>
+                        {% empty %}
+                        <li>Nenhuma especificação cadastrada.</li>
+                        {% endfor %}
+                    </ul>
+                    <h6>Preços por quantidade:</h6>
+                    <table class="table">
+                        <tbody>
+                            {% for tier in variation.price_tiers.all %}
+                            <tr>
+                                <td>{{ tier.quantity }} unidades</td>
+                                <!-- ===== CORREÇÃO 2: Formatação do Preço ===== -->
+                                <td class="text-end">
+                                    <strong>R$ {{ tier.price|floatformat:2 }}</strong>
+                                </td>
+                                <td class="text-end">
+                                    <form action="{% url 'orders:add_to_cart_with_design' design.id tier.id %}" method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-primary">Adicionar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">Nenhum preço cadastrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- ===== ESTRUTURA DO MODAL (fica fora do card) ===== -->
+        <div class="modal fade" id="variationModal-{{ variation.id }}" tabindex="-1" aria-labelledby="variationModalLabel-{{ variation.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="variationModalLabel-{{ variation.id }}">{{ variation.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrossel de Imagens (se houver imagens) -->
+                        {% if variation.images.all %}
+                        <div id="carousel{{ variation.id }}" class="carousel slide mb-4" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                {% for image in variation.images.all %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{{ image.image.url }}" class="d-block w-100 rounded" alt="{{ image.alt_text }}" />
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ variation.id }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ variation.id }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        {% endif %}
+
+                        <!-- Vídeo (se houver) -->
+                        {% if variation.video_url %}
+                        <div class="ratio ratio-16x9 mb-4">
+                            <iframe
+                                src="{{ variation.video_url|get_embed_url }}"
+                                title="Vídeo do produto"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen
+                                class="rounded"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                            >
+                            </iframe>
+                        </div>
+                        {% endif %}
+
+                        <!-- Descrição Detalhada -->
+                        <h5>Descrição Detalhada</h5>
+                        <!-- CORREÇÃO AQUI: Garante que a sintaxe está perfeita -->
+                        <div class="description-content">
+                            <p>{{ variation.detailed_description|linebreaksbr|default:"Nenhuma descrição detalhada disponível." }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning" role="alert">Nenhuma opção de produto foi configurada para este design ainda.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

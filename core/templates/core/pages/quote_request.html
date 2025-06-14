@@ -1,0 +1,99 @@
+{% extends "core/base.html" %} {% block title %}Orçamento Personalizado - {{ block.super }}{% endblock %} {% block content %}
+<div class="container">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Orçamento Personalizado</h1>
+        <p class="lead text-muted">Não encontrou o que procurava? Descreva sua necessidade abaixo e nossa equipe retornará com um orçamento exclusivo para você.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-body shadow-sm">
+                <form id="quote-form" action="{% url 'quote_request' %}" method="POST">
+                    {% csrf_token %}
+                    <h5 class="mb-4">Informações de Contato</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6"><input type="text" class="form-control" name="name" placeholder="Seu Nome Completo" required /></div>
+                        <div class="col-md-6"><input type="email" class="form-control" name="email" placeholder="Seu Melhor Email" required /></div>
+                        <div class="col-12"><input type="tel" class="form-control" name="phone" placeholder="Seu Telefone com DDD" required /></div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h5 class="mb-4">Detalhes do Material</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6"><input type="text" class="form-control" name="material_type" placeholder="Tipo de Material (ex: Cartão de Visita)" /></div>
+                        <div class="col-md-6"><input type="text" class="form-control" name="quantity" placeholder="Quantidade (ex: 1.000)" /></div>
+                        <div class="col-12"><input type="text" class="form-control" name="material_format" placeholder="Formato (ex: 9x5 cm)" /></div>
+                        <div class="col-12"><input type="text" class="form-control" name="paper_type" placeholder="Papel (ex: Couchê 300g)" /></div>
+                        <div class="col-md-6">
+                            <select name="printing_color" class="form-select">
+                                <option value="">Impressão Colorida ou P&B?</option>
+                                <option value="Colorida">Colorida</option>
+                                <option value="Preto e Branco">Preto e Branco</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <select name="printing_sides" class="form-select">
+                                <option value="">Somente Frente ou Frente e Verso?</option>
+                                <option value="Somente Frente">Somente Frente</option>
+                                <option value="Frente e Verso">Frente e Verso</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6"><input type="text" class="form-control" name="finishing" placeholder="Acabamentos (ex: Dobra, Grampo)" /></div>
+                        <div class="col-md-6"><input type="text" class="form-control" name="embellishment" placeholder="Enobrecimento (ex: Laminação Fosca)" /></div>
+                        <div class="col-12">
+                            <textarea name="details" class="form-control" rows="4" placeholder="Tem mais algum detalhe? Descreva aqui..."></textarea>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button id="whatsapp-btn" class="btn btn-success me-md-2" type="button"><i class="bi bi-whatsapp me-2"></i>Enviar por WhatsApp</button>
+                    <button id="email-btn" class="btn btn-primary" type="button"><i class="bi bi-envelope-fill me-2"></i>Enviar por Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const quoteForm = document.getElementById('quote-form');
+
+        // Botão de Email
+        document.getElementById('email-btn').addEventListener('click', function () {
+            quoteForm.submit(); // Submete o formulário normalmente
+        });
+
+        // Botão de WhatsApp
+        document.getElementById('whatsapp-btn').addEventListener('click', function () {
+            const fields = [
+                { label: 'Nome', value: quoteForm.elements.name.value },
+                { label: 'Email', value: quoteForm.elements.email.value },
+                { label: 'Telefone', value: quoteForm.elements.phone.value },
+                { label: 'Material', value: quoteForm.elements.material_type.value },
+                { label: 'Quantidade', value: quoteForm.elements.quantity.value },
+                { label: 'Formato', value: quoteForm.elements.material_format.value },
+                { label: 'Papel', value: quoteForm.elements.paper_type.value },
+                { label: 'Impressão', value: quoteForm.elements.printing_color.value },
+                { label: 'Lados', value: quoteForm.elements.printing_sides.value },
+                { label: 'Acabamentos', value: quoteForm.elements.finishing.value },
+                { label: 'Enobrecimento', value: quoteForm.elements.embellishment.value },
+                { label: 'Detalhes', value: quoteForm.elements.details.value },
+            ];
+
+            let message = 'Olá! Gostaria de solicitar um orçamento personalizado com os seguintes detalhes:\n\n';
+            fields.forEach((field) => {
+                if (field.value) {
+                    message += `*${field.label}:* ${field.value}\n`;
+                }
+            });
+
+            const whatsappNumber = '551631015451';
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+            window.open(whatsappUrl, '_blank');
+        });
+    });
+</script>
+{% endblock %}

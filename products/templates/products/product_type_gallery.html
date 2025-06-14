@@ -1,0 +1,37 @@
+{% extends "core/base.html" %} {% block title %}Nossos Produtos - {{ block.super }}{% endblock %} {% block content %}
+<div class="container">
+    <div class="text-center mb-5">
+        {# A URL agora é dinâmica dependendo do fluxo #} {% if is_design_service %}
+        <h1 class="display-4">Contratar um Designer</h1>
+        <p class="lead text-muted">Selecione um produto e nós criaremos a arte para si!</p>
+        {% else %}
+        <h1 class="display-4">Nossos Produtos</h1>
+        <p class="lead text-muted">Selecione um tipo de produto para ver as opções disponíveis.</p>
+        {% endif %}
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        {% for p_type in product_types %}
+        <div class="col">
+            <a
+                href="{% if is_design_service %}{% url 'products:hire_design_variation_list' p_type.slug %}{% else %}{% url 'products:product_variation_list' p_type.slug %}{% endif %}"
+                class="card h-100 card-product card-interactive"
+            >
+                {% if p_type.image %}
+                <img src="{{ p_type.image.url }}" class="card-img-top" alt="{{ p_type.name }}" />
+                {% else %}
+                <img src="https://placehold.co/600x400/E9ECEF/495057?text={{ p_type.name|urlencode }}" class="card-img-top" alt="Imagem não disponível" />
+                {% endif %}
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h5 class="card-title">{{ p_type.name }}</h5>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">Nenhum produto cadastrado no momento.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
