@@ -29,11 +29,16 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-sua-chave-de-desenvol
 DEBUG = os.environ.get('DEBUG') == '1'
 
 # Hosts permitidos. Em produção, você adicionará o seu URL do Render aqui.
-# '.onrender.com' permite que qualquer subdomínio do Render acesse seu site.
-ALLOWED_HOSTS = []
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+# Em produção, o Heroku nos dará uma string com o nosso domínio.
+ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
+if ALLOWED_HOSTS_ENV:
+    # Se a variável existir, dividimos a string por vírgulas para criar uma lista.
+    # Isso nos permite ter múltiplos domínios no futuro, se necessário.
+    ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
+else:
+    # Se a variável não existir (em desenvolvimento local), a lista fica vazia
+    # e o Django adiciona 'localhost' e '127.0.0.1' automaticamente quando DEBUG=True.
+    ALLOWED_HOSTS = []
 
 
 # Application definition
