@@ -1,6 +1,7 @@
 # config/settings.py
 import os
 import dj_database_url
+import cloudinary
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -90,17 +91,21 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Configuração do Cloudinary é lida da variável de ambiente
-CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+# Configuração explícita do Cloudinary
+cloudinary.config(
+  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+  api_key = os.environ.get('CLOUDINARY_API_KEY'),
+  api_secret = os.environ.get('CLOUDINARY_API_SECRET')
+)
 
-# Se a variável CLOUDINARY_URL existir, assumimos que estamos em produção.
-if CLOUDINARY_URL:
+# Se não estivermos em modo DEBUG (em produção), use o Cloudinary.
+if not DEBUG:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     
 # --- Tipos de campo padrão ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
