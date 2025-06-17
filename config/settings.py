@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic', # Whitenoise
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     
     # Nossos apps
     'core.apps.CoreConfig',
@@ -107,7 +109,12 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Em produção, usaremos o Cloudinary. Em desenvolvimento, continuaremos usando o local.
+if DEBUG:
+    MEDIA_ROOT = BASE_DIR / 'media'
+else:
+    # Esta configuração diz ao Django para usar o Cloudinary para os uploads
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # --- Configuração de Email ---
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -115,3 +122,6 @@ DEFAULT_FROM_EMAIL = 'no-reply@premiumgrafica.com.br'
 
 # --- Tipos de campo padrão ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Esta configuração será lida a partir da variável de ambiente no Heroku
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
