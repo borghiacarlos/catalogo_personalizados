@@ -116,12 +116,12 @@ else:
     # Esta configuração diz ao Django para usar o Cloudinary para os uploads
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# Esta configuração será lida a partir da variável de ambiente no Heroku
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+
 # --- Configuração de Email ---
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'no-reply@premiumgrafica.com.br'
 
 # --- Tipos de campo padrão ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Esta configuração será lida a partir da variável de ambiente no Heroku
-CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
