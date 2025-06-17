@@ -95,13 +95,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# A configuração do Cloudinary é lida da variável de ambiente.
+# Configuração do Cloudinary é lida da variável de ambiente
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
 
-# Se não estivermos em modo DEBUG, force o uso do Cloudinary para os uploads.
-if not DEBUG:
+# Se a variável CLOUDINARY_URL existir, assumimos que estamos em produção.
+if CLOUDINARY_URL:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
+    
 # --- Tipos de campo padrão ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'contatoy@premiumgrafica.com.br'
