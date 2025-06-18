@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Apps de terceiros
-    'cloudinary_storage',
     'cloudinary',
 
     # Nossos apps
@@ -66,13 +65,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -86,38 +79,20 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# Verificamos se estamos no Heroku pela presença da variável DATABASE_URL
-IS_HEROKU_APP = "DATABASE_URL" in os.environ and not DEBUG
-
-if IS_HEROKU_APP:
-    # --- Configurações de Produção (Heroku) ---
-    DATABASES = {'default': dj_database_url.config(conn_max_age=600, conn_health_checks=True)}
-    
-    # Armazenamento de Mídia (Uploads) aponta para o Cloudinary
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-    # Configuração explícita do Cloudinary
-    cloudinary.config(
-        cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
-        api_key = os.environ.get('CLOUDINARY_API_KEY'),
-        api_secret = os.environ.get('CLOUDINARY_API_SECRET')
-    )
-
-    # Armazenamento de Estáticos (CSS, JS) aponta para o Whitenoise
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-else:
-    # --- Configurações de Desenvolvimento (Local) ---
-    DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
-    
-    # Armazenamento Local para Mídia
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
-
-# --- Configurações de Mídia e Estáticos ---
+# --- Estáticos (CSS, JS) ---
+# Esta configuração não muda. Whitenoise continua a ser a melhor opção.
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# --- Mídia (Uploads) ---
+# A nova biblioteca lê a STORAGE_URL. Se não existir, usa o padrão local.
+# Defina uma variável STORAGE_URL no Heroku com o mesmo valor da sua CLOUDINARY_URL.
+STORAGE_CONFIG = dj_storage_url.config()
+DEFAULT_FILE_STORAGE = STORAGE_CONFIG.get('BACKEND')
+MEDIA_URL = STORAGE_CONFIG.get('URL')
+MEDIA_ROOT = STORAGE_CONFIG.get('ROOT')
     
 # --- Tipos de campo padrão ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
