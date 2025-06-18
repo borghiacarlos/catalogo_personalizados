@@ -86,26 +86,38 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
+# Verificamos se estamos no Heroku pela presença da variável DATABASE_URL
+IS_HEROKU_APP = "DATABASE_URL" in os.environ and not DEBUG
 
-# --- MUDANÇA PRINCIPAL: Configurações de Mídia e Estáticos ---
+if IS_HEROKU_APP:
+    # --- Configurações de Produção (Heroku) ---
+    DATABASES = {'default': dj_database_url.config(conn_max_age=600, conn_health_checks=True)}
+    
+    # Armazenamento de Mídia (Uploads) aponta para o Cloudinary
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+    # Configuração explícita do Cloudinary
+    cloudinary.config(
+        cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+        api_key = os.environ.get('CLOUDINARY_API_KEY'),
+        api_secret = os.environ.get('CLOUDINARY_API_SECRET')
+    )
+
+    # Armazenamento de Estáticos (CSS, JS) aponta para o Whitenoise
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+else:
+    # --- Configurações de Desenvolvimento (Local) ---
+    DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
+    
+    # Armazenamento Local para Mídia
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+# --- Configurações de Mídia e Estáticos ---
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Configuração explícita do Cloudinary
-cloudinary.config(
-  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
-  api_key = os.environ.get('CLOUDINARY_API_KEY'),
-  api_secret = os.environ.get('CLOUDINARY_API_SECRET')
-)
-
-# Se não estivermos em modo DEBUG (em produção), use o Cloudinary.
-if not DEBUG:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     
 # --- Tipos de campo padrão ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
