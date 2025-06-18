@@ -1,14 +1,14 @@
 # config/settings.py
 import os
 import dj_database_url
-import cloudinary
+import dj_storage_url
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- Configurações de Segurança ---
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG') == '1'
+DEBUG = os.environ.get('DEBUG') != 'False' # Lê 'False' do Heroku
 
 ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')] if ALLOWED_HOSTS_ENV else []
@@ -88,11 +88,18 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # --- Mídia (Uploads) ---
 # A nova biblioteca lê a STORAGE_URL. Se não existir, usa o padrão local.
-# Defina uma variável STORAGE_URL no Heroku com o mesmo valor da sua CLOUDINARY_URL.
+dj_storage_url.register_storage_class('cloudinary', 'cloudinary.storage.CloudinaryStorage')
 STORAGE_CONFIG = dj_storage_url.config()
-DEFAULT_FILE_STORAGE = STORAGE_CONFIG.get('BACKEND')
-MEDIA_URL = STORAGE_CONFIG.get('URL')
-MEDIA_ROOT = STORAGE_CONFIG.get('ROOT')
+
+# Se a configuração de armazenamento foi encontrada (estamos em produção)...
+if STORAGE_CONFIG:
+    DEFAULT_FILE_STORAGE = STORAGE_CONFIG.get('BACKEND')
+    MEDIA_URL = STORAGE_CONFIG.get('URL')
+    MEDIA_ROOT = STORAGE_CONFIG.get('ROOT')
+# Caso contrário (estamos em desenvolvimento local)...
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
     
 # --- Tipos de campo padrão ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
