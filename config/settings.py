@@ -12,6 +12,13 @@ DEBUG = os.environ.get('DEBUG') == 'True'
 ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')] if ALLOWED_HOSTS_ENV else []
 
+# --- Configurações da Cloudinary ---
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
+
 # --- Configurações da Aplicação ---
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -20,11 +27,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
-    'django.contrib.staticfiles',
-    
     # Apps de terceiros
     'cloudinary_storage',
     'cloudinary',
+    'django.contrib.staticfiles',
 
     # Nossos apps
     'core.apps.CoreConfig',
@@ -53,7 +59,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
 # --- LÓGICA DE PRODUÇÃO VS. DESENVOLVIMENTO ---
 
 IS_HEROKU_APP = "DATABASE_URL" in os.environ
@@ -63,13 +68,12 @@ if IS_HEROKU_APP:
     DATABASES = {'default': dj_database_url.config(conn_max_age=600, conn_health_checks=True)}
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    MEDIA_URL = 'https://res.cloudinary.com/{}/'.format(CLOUDINARY_STORAGE['CLOUD_NAME'])
 else:
     # Configurações de Desenvolvimento (Local)
     DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Configurações comuns de Estáticos
 STATIC_URL = 'static/'
