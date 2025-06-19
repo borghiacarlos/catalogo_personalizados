@@ -20,10 +20,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
+    'django.contrib.staticfiles',
+    
     # Apps de terceiros
     'cloudinary_storage',
     'cloudinary',
-    'django.contrib.staticfiles',
 
     # Nossos apps
     'core.apps.CoreConfig',
@@ -52,6 +53,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
 # --- LÓGICA DE PRODUÇÃO VS. DESENVOLVIMENTO ---
 
 IS_HEROKU_APP = "DATABASE_URL" in os.environ
@@ -59,26 +61,15 @@ IS_HEROKU_APP = "DATABASE_URL" in os.environ
 if IS_HEROKU_APP:
     # Configurações de Produção (Heroku)
     DATABASES = {'default': dj_database_url.config(conn_max_age=600, conn_health_checks=True)}
-    
-    # Configurações Cloudinary
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-    }
-
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    
-    # Opcional, para garantir URLs corretos
-    MEDIA_URL = f"https://res.cloudinary.com/{CLOUDINARY_STORAGE['CLOUD_NAME']}/image/upload/"
 else:
-    # Configurações de Desenvolvimento (Local)
     # Configurações de Desenvolvimento (Local)
     DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Configurações comuns de Estáticos
 STATIC_URL = 'static/'
