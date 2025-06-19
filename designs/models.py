@@ -1,6 +1,7 @@
 from django.db import models
 # Importamos o model ProductVariation do app 'products' para criar a relação.
 from products.models import ProductVariation
+from cloudinary.models import CloudinaryField # Importe o CloudinaryField
 
 # Modelagem para os Designs e seus filtros
 
@@ -39,7 +40,8 @@ class Design(models.Model):
     O modelo de arte principal do catálogo.
     """
     name = models.CharField(max_length=100, verbose_name="Nome do Design")
-    image = models.ImageField(upload_to='designs/', verbose_name="Imagem Principal")
+    # image = models.ImageField(upload_to='designs/', verbose_name="Imagem Principal")
+    image = CloudinaryField('image', folder='designs')
     categories = models.ManyToManyField(Category, related_name="designs", verbose_name="Categorias")
     colors = models.ManyToManyField(Color, related_name="designs", blank=True, verbose_name="Cores")
 

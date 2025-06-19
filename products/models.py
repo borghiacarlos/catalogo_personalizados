@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField # Importe o CloudinaryField
 
 # Modelagem para os Tipos de Produtos e suas Variações
 
@@ -18,13 +19,15 @@ class ProductType(models.Model):
         help_text="Valor cobrado para criar a arte para este tipo de produto. Deixe 0 se não houver taxa."
     )
 
-    image = models.ImageField(
-        upload_to='product_types/',
-        blank=True, # A imagem é opcional
-        null=True,
-        verbose_name="Imagem representativa do produto",
-        help_text="Imagem que aparecerá na galeria de produtos."
-    )
+    # image = models.ImageField(
+    #     upload_to='product_types/',
+    #     blank=True, # A imagem é opcional
+    #     null=True,
+    #     verbose_name="Imagem representativa do produto",
+    #     help_text="Imagem que aparecerá na galeria de produtos."
+    # )
+
+    image = CloudinaryField('image', blank=True, null=True, folder='product_types')
 
     class Meta:
         verbose_name = "Tipo de Produto"
@@ -40,8 +43,8 @@ class ProductVariation(models.Model):
     """
     product_type = models.ForeignKey(ProductType, on_delete=models.PROTECT, related_name="variations", verbose_name="Tipo de Produto")
     name = models.CharField(max_length=100, verbose_name="Nome da Variação")
-    # O campo JSONField foi removido daqui.
-    icon_image = models.ImageField(upload_to='products/icons/', blank=True, null=True, verbose_name="Ícone Visual")
+    # icon_image = models.ImageField(upload_to='products/icons/', blank=True, null=True, verbose_name="Ícone Visual")
+    icon_image = CloudinaryField('icon_image', blank=True, null=True, folder='products/icons')
     detailed_description = models.TextField(
         blank=True,
         verbose_name="Descrição Detalhada",
@@ -66,7 +69,8 @@ class ProductImage(models.Model):
     Uma imagem da galeria para uma ProductVariation.
     """
     product_variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE, related_name="images", verbose_name="Variação de Produto")
-    image = models.ImageField(upload_to='products/gallery/', verbose_name="Imagem")
+    # image = models.ImageField(upload_to='products/gallery/', verbose_name="Imagem")
+    image = CloudinaryField('image', folder='products/gallery')
     alt_text = models.CharField(max_length=255, blank=True, verbose_name="Texto Alternativo (SEO)")
 
     class Meta:

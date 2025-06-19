@@ -61,7 +61,7 @@ IS_HEROKU_APP = "DATABASE_URL" in os.environ
 if IS_HEROKU_APP:
     # Configurações de Produção (Heroku)
     DATABASES = {'default': dj_database_url.config(conn_max_age=600, conn_health_checks=True)}
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 else:
     # Configurações de Desenvolvimento (Local)
