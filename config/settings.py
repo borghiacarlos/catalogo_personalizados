@@ -10,7 +10,7 @@ DEBUG = os.environ.get('DEBUG') == 'True'
 
 # O PythonAnywhere adiciona seu domínio automaticamente, mas é bom ter esta configuração.
 ALLOWED_HOSTS = [
-    'seu-usuario.pythonanywhere.com', # Substitua 'seu-usuario' pelo seu username
+    'borghiacarlos.pythonanywhere.com', # Substitua 'seu-usuario' pelo seu username
     '127.0.0.1',
 ]
 
@@ -52,6 +52,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # --- Configurações de Arquivos ---
 STATIC_URL = '/static/'
