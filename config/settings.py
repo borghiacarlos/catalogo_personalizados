@@ -1,6 +1,5 @@
 # config/settings.py
 import os
-import dj_database_url
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,8 +8,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
-ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')] if ALLOWED_HOSTS_ENV else []
+# O PythonAnywhere adiciona seu domínio automaticamente, mas é bom ter esta configuração.
+ALLOWED_HOSTS = [
+    'seu-usuario.pythonanywhere.com', # Substitua 'seu-usuario' pelo seu username
+    '127.0.0.1',
+]
 
 # --- Configurações da Aplicação ---
 INSTALLED_APPS = [
@@ -21,8 +23,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    
-    # Apps de terceiros
     'cloudinary_storage',
     'cloudinary',
 
@@ -53,28 +53,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
-# --- LÓGICA DE PRODUÇÃO VS. DESENVOLVIMENTO ---
+# --- Configurações de Arquivos ---
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
-IS_HEROKU_APP = "DATABASE_URL" in os.environ
+MEDIA_URL = '/media/'
+# No PythonAnywhere, a pasta de mídia precisa de ser um caminho absoluto.
+MEDIA_ROOT = BASE_DIR / 'media'
 
-if IS_HEROKU_APP:
-    # Configurações de Produção (Heroku)
-    DATABASES = {'default': dj_database_url.config(conn_max_age=600, conn_health_checks=True)}
-    # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-else:
-    # Configurações de Desenvolvimento (Local)
-    DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Configurações comuns de Estáticos
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Configuração para usar Cloudinary para uploads.
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

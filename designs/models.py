@@ -40,8 +40,7 @@ class Design(models.Model):
     O modelo de arte principal do catálogo.
     """
     name = models.CharField(max_length=100, verbose_name="Nome do Design")
-    # image = models.ImageField(upload_to='designs/', verbose_name="Imagem Principal")
-    image = CloudinaryField('image', folder='designs')
+    image = models.ImageField(upload_to='designs/', verbose_name="Imagem Principal")
     categories = models.ManyToManyField(Category, related_name="designs", verbose_name="Categorias")
     colors = models.ManyToManyField(Color, related_name="designs", blank=True, verbose_name="Cores")
 
