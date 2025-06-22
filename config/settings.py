@@ -1,18 +1,14 @@
-# config/settings.py
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --- Configurações de Segurança ---
-SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG') == 'True'
+# --- Configurações de Segurança, altere 'suachavesupersecretkey' com o comando: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"---
+SECRET_KEY = os.environ.get('SECRET_KEY','suachavesupersecretkey')
+DEBUG = True  # Mude para False em producao
 
-# O PythonAnywhere adiciona seu domínio automaticamente, mas é bom ter esta configuração.
-ALLOWED_HOSTS = [
-    'borghiacarlos.pythonanywhere.com', # Substitua 'seu-usuario' pelo seu username
-    '127.0.0.1',
-]
+# --- Configurações de Hosts, mude para seu endereco ao hospedar ---
+ALLOWED_HOSTS = ['*']
 
 # --- Configurações da Aplicação ---
 INSTALLED_APPS = [
@@ -23,8 +19,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'cloudinary_storage',
-    'cloudinary',
+    # Para usar o Cloudinary para uploads de arquivos, descomente as linhas abaixo:
+    # 'cloudinary_storage',
+    # 'cloudinary',
 
     # Nossos apps
     'core.apps.CoreConfig',
@@ -65,11 +62,20 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_URL = '/media/'
-# No PythonAnywhere, a pasta de mídia precisa de ser um caminho absoluto.
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Configuração para usar Cloudinary para uploads.
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Configuração para usar Cloudinary para uploads, comente se estiver usando o Sqlite3.
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Configuração para usar o Sqlite3, comente se estiver usando o Cloudinary.
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -83,7 +89,7 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
     
-# --- Tipos de campo padrão ---
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
